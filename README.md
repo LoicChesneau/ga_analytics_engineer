@@ -23,27 +23,13 @@ The challenge needs to be resolved in PostgreSQL.
 Exercises depend on datasets available in /data/
 **You can't modify them.**
 
-Your solution to exercise {N} needs to live in the `worksheets_{N}` directory as .sql files.
+Your solution to exercise {N} needs to live in the `worksheets_{N}` directory as .sql files. The SQL queries you provide need to be working.
 
 For certain parts of the challenge, you will be asked to provide written answers, in these cases, please submit them in `worksheets_{N}` as markdown files.
 
 ## Setup
 
-### 0.1
-
-Create a local Postgresql instance, ideally 13.3 on MacOS
-
-### 0.2
-
-Create a table named `raw_payloads` in the SQL instance you have just created and insert the payloads provided in `./data/tracking_payloads_20210603.csv`.
-
-### 0.3
-
-Create another table named `events` and insert a parsed version of `raw_payloads` inside of it.
-
-## Exercise 1
-
-The payload you have been provided with are generated whenever a user triggers an action relevant to our analytics on the platform. 
+For this challenge, you are provided with payloads that have been generated whenever a user triggers an action relevant to our analytics on the platform. 
 
 Each event you have parsed out of these raw payloads respects a default structure:
 - `timestamp`: generated at the exact time of the action.
@@ -53,11 +39,29 @@ Each event you have parsed out of these raw payloads respects a default structur
 With an optional additional key:
 - `url`: url the user has triggered the action from
 
-We want to aggregate these events together to analyse user behavior over a certain period of time.
+**DISCLAIMER**: these data are randomly faked end to end, do not try to interpret them.
+
+### 0.1
+
+Create a local PostgreSQL instance
+
+### 0.2
+
+Create a table named `raw_payloads` in the SQL instance you have just created and insert the payloads provided in `./data/tracking_payloads_20210603.csv`.
+
+### 0.3
+
+Parse the json objects you have inserted in `raw_payloads`: each key should become a column, each value should become a row value.
+With your parsing query, create another table named `events` and insert your parsed version of `raw_payloads` inside of it.
+
+
+## Exercise 1
+
+We want to aggregate events together to analyse user behavior over a certain period of time.
 
 ### 1.1 
 
-Create a table that aggregates events per session of events. If a user has stopped their activity for more than 30 minutes, we should consider the session as ended.
+Create a table that aggregates events per session of events. Sessions are segmented period of activity we observe for a user. In this exercise, we consider that if a user stops their activity for more than 30 minutes, the session as ended. If a user starts their activity again, then a new session begins until the user stops for more than 30 minutes again.
 
 The SQL query you design to create this table should ultimately respect the following format:
 - `anonymous_id`
@@ -80,15 +84,18 @@ Another set of raw payloads is provided to you in `./data/tracking_payloads_2021
 
 ### 2.1
 
-Write the serie of queries that will succesively update `raw_payloads`, `payloads` and `sessions` in your SQL file.
+Write the serie of queries that will succesively update `raw_payloads`, `events` and `sessions` in your SQL file.
 
 Explain your approach in the markdown file.
 
 ### 2.2
 
-Do you observe issues in your computations because of this additional file? If so, create a second SQL file to show us how you would adapt your transformation queries to produce reliable tables for analytics.
+Do you observe issues in your computations because of this additional file? 
 
-Detail the issues you have noticed and explain how your design fixes them in your markdown file.
+If so, create a second SQL file to show us how you would adapt your transformation queries to produce reliable tables for analytics.
+
+Lkist the issues you have noticed and explain how your design fixes them in your markdown file.
+
 
 ## Exercise 3
 
@@ -98,8 +105,11 @@ Without any additional dataset, find a way to challenge your query with a larger
 
 Explain your approach in the markdown file.
 
+
 ## Exercise 4
 
 Write queries that you could run to test your raw and transformed tables.
 
-In your markdown file, tell us the way these queries should be run to optimally test your data.
+The test should challenge the quality and consistency of the data you are provided with and the data you have transformed. Example: you could run a test to check if payloads have been duplicated.
+
+In your markdown file, tell us how and when the test queries you have written would be executed to optimally test your data. Tell us why you think these tests are essential in the context of the story of this exercise.
